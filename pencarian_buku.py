@@ -2,10 +2,10 @@ import csv
 import time
 
 # ====== PENGATURAN (sesuaikan dengan nama kolom di books.csv) ======
-FILE_CSV = "books.csv"
-KOLOM_JUDUL = "Title"
-KOLOM_PENULIS = "Author"
-KOLOM_KATEGORI = "Category"
+FILE_CSV = "google_books_dataset.csv"
+KOLOM_JUDUL = "title"
+KOLOM_PENULIS = "authors"
+KOLOM_KATEGORI = "categories"
 
 
 # ====== KELAS INPUT: 1 data buku ======
@@ -29,14 +29,18 @@ class Hasil:
 
 # ====== 1. BACA DATASET -> disimpan di list ======
 def baca_dataset(nama_file):
-    data = []
-    with open(nama_file, encoding="utf-8", newline="") as f:
-        pembaca = csv.DictReader(f)
-        for i, baris in enumerate(pembaca):
-            data.append(Buku(i + 1, baris[KOLOM_JUDUL],
-                             baris[KOLOM_PENULIS], baris[KOLOM_KATEGORI]))
-    return data
-
+       data = []
+       sudah = {}                       # untuk membuang judul ganda
+       with open(nama_file, encoding="utf-8", newline="") as f:
+           pembaca = csv.DictReader(f)
+           for i, baris in enumerate(pembaca):
+               buku = Buku(i + 1, baris[KOLOM_JUDUL],
+                           baris[KOLOM_PENULIS], baris[KOLOM_KATEGORI])
+               if buku.kunci == "" or sudah.get(buku.kunci) is not None:
+                   continue             # lewati judul kosong / judul ganda
+               sudah[buku.kunci] = True
+               data.append(buku)
+       return data
 
 # ====== 2. LINEAR SEARCH ======
 def linear_search(data, judul):
